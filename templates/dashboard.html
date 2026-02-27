@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+margin:0;
+font-family:'Segoe UI';
+background:#f4f6f9;
+padding:20px;
+}
+.header{
+background:linear-gradient(135deg,#667eea,#764ba2);
+color:white;
+padding:20px;
+text-align:center;
+border-radius:10px;
+}
+.container{
+background:white;
+padding:20px;
+margin-top:20px;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:6px;
+border:1px solid #ddd;
+}
+button{
+width:100%;
+padding:10px;
+background:#667eea;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+.plan-card{
+background:white;
+padding:15px;
+margin-top:15px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h2>📊 Personalized Entrance Exam Coach</h2>
+</div>
+
+<div class="container">
+<h3>Enter Subject Scores</h3>
+<input type="number" id="m1" placeholder="M1 Score">
+<input type="number" id="eda" placeholder="EDA Score">
+<input type="number" id="dms" placeholder="DMS Score">
+<button onclick="generatePlan()">Generate Plan</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+function generatePlan(){
+fetch("/generate-plan",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+m1:document.getElementById("m1").value,
+eda:document.getElementById("eda").value,
+dms:document.getElementById("dms").value
+})
+})
+.then(res=>res.json())
+.then(data=>{
+let output=`
+<div class="plan-card">
+<h3>📌 Subject Priority</h3>
+<p>Weak: ${data.lowest}</p>
+<p>Medium: ${data.medium}</p>
+<p>Strong: ${data.highest}</p>
+</div>
+`;
+data.plan.forEach(day=>{
+output+=`
+<div class="plan-card">
+<h3>Day ${day.day}</h3>
+<p>Subject: ${day.subject}</p>
+<p>Chapter: ${day.chapter}</p>
+<p>Study Time: 2 Hours</p>
+</div>
+`;
+});
+document.getElementById("result").innerHTML=output;
+});
+}
+</script>
+
+</body>
+</html>
